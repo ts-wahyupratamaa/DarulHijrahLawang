@@ -20,6 +20,27 @@ const AnimatedReveal: React.FC<AnimatedRevealProps> = ({
     const node = ref.current;
     if (!node) return;
 
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const isCoarsePointer =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(hover: none) and (pointer: coarse)").matches &&
+      window.matchMedia("(max-width: 767px)").matches;
+
+    if (prefersReducedMotion || isCoarsePointer) {
+      setIsVisible(true);
+      return;
+    }
+
+    if (typeof IntersectionObserver === "undefined") {
+      setIsVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {

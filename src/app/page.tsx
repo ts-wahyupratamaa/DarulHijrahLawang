@@ -10,7 +10,6 @@ import ContactSection from '@/components/sections/ContactSection';
 import FooterSection from '@/components/sections/FooterSection';
 import VisionMissionSection from '@/components/sections/VisionMissionSection';
 import RequirementsSection from '@/components/sections/RequirementsSection';
-// import SectionAsatiz from '@/components/sections/SectionAsatiz';
 import SectionAsatizz from '@/components/sections/SectionAsatizz';
 
 export default function HomePage() {
@@ -18,18 +17,37 @@ export default function HomePage() {
     <main className='bg-white'>
       <NavigationBar />
       <HeroSection />
-      <VisionMissionSection />
-      <ProgramsSection />
-      <HalaqohSection />
-      {/* <SectionAsatiz /> */}
-      <SectionAsatizz />
-      <ExtracurricularSection />
-      <GallerySection />
-      <TimelineSection />
-      <RequirementsSection />
-      <FAQSection />
+      <div className='lazy-section'>
+        <VisionMissionSection />
+      </div>
+      <div className='lazy-section'>
+        <ProgramsSection />
+      </div>
+      <div className='lazy-section'>
+        <HalaqohSection />
+      </div>
+      <div className='lazy-section'>
+        <SectionAsatizz />
+      </div>
+      <div className='lazy-section'>
+        <ExtracurricularSection />
+      </div>
+      <div className='lazy-section'>
+        <GallerySection />
+      </div>
+      <div className='lazy-section'>
+        <TimelineSection />
+      </div>
+      <div className='lazy-section'>
+        <RequirementsSection />
+      </div>
+      <div className='lazy-section'>
+        <FAQSection />
+      </div>
       <ContactSection />
-      <FooterSection />
+      <div className='lazy-section'>
+        <FooterSection />
+      </div>
     </main>
   );
 }

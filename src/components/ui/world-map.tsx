@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useMemo, useRef } from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import DottedMap from 'dotted-map';
 
 interface MapProps {
@@ -20,6 +20,7 @@ export default function WorldMap({
   dotColor = 'rgba(255, 255, 255, 0.6)',
 }: MapProps) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   const map = useMemo(() => new DottedMap({ height: 100, grid: 'diagonal' }), []);
 
@@ -92,24 +93,33 @@ export default function WorldMap({
           const endPoint = projectPoint(dot.end.lat, dot.end.lng);
           return (
             <g key={`path-group-${i}`}>
-              <motion.path
-                d={createCurvedPath(startPoint, endPoint)}
-                fill='none'
-                stroke='url(#path-gradient)'
-                strokeWidth='1'
-                initial={{
-                  pathLength: 0,
-                }}
-                animate={{
-                  pathLength: 1,
-                }}
-                transition={{
-                  duration: 1,
-                  delay: 0.5 * i,
-                  ease: 'easeOut',
-                }}
-                key={`start-upper-${i}`}
-              ></motion.path>
+              {shouldReduceMotion ? (
+                <path
+                  d={createCurvedPath(startPoint, endPoint)}
+                  fill='none'
+                  stroke='url(#path-gradient)'
+                  strokeWidth='1'
+                />
+              ) : (
+                <motion.path
+                  d={createCurvedPath(startPoint, endPoint)}
+                  fill='none'
+                  stroke='url(#path-gradient)'
+                  strokeWidth='1'
+                  initial={{
+                    pathLength: 0,
+                  }}
+                  animate={{
+                    pathLength: 1,
+                  }}
+                  transition={{
+                    duration: 1,
+                    delay: 0.5 * i,
+                    ease: 'easeOut',
+                  }}
+                  key={`start-upper-${i}`}
+                />
+              )}
             </g>
           );
         })}
@@ -139,22 +149,26 @@ export default function WorldMap({
                 fill={lineColor}
                 opacity='0.5'
               >
-                <animate
-                  attributeName='r'
-                  from='2'
-                  to='8'
-                  dur='1.5s'
-                  begin='0s'
-                  repeatCount='indefinite'
-                />
-                <animate
-                  attributeName='opacity'
-                  from='0.5'
-                  to='0'
-                  dur='1.5s'
-                  begin='0s'
-                  repeatCount='indefinite'
-                />
+                {!shouldReduceMotion ? (
+                  <>
+                    <animate
+                      attributeName='r'
+                      from='2'
+                      to='8'
+                      dur='1.5s'
+                      begin='0s'
+                      repeatCount='indefinite'
+                    />
+                    <animate
+                      attributeName='opacity'
+                      from='0.5'
+                      to='0'
+                      dur='1.5s'
+                      begin='0s'
+                      repeatCount='indefinite'
+                    />
+                  </>
+                ) : null}
               </circle>
             </g>
             <g key={`end-${i}`}>
@@ -171,57 +185,83 @@ export default function WorldMap({
                 fill={lineColor}
                 opacity='0.5'
               >
-                <animate
-                  attributeName='r'
-                  from='2'
-                  to='8'
-                  dur='1.5s'
-                  begin='0s'
-                  repeatCount='indefinite'
-                />
-                <animate
-                  attributeName='opacity'
-                  from='0.5'
-                  to='0'
-                  dur='1.5s'
-                  begin='0s'
-                  repeatCount='indefinite'
-                />
+                {!shouldReduceMotion ? (
+                  <>
+                    <animate
+                      attributeName='r'
+                      from='2'
+                      to='8'
+                      dur='1.5s'
+                      begin='0s'
+                      repeatCount='indefinite'
+                    />
+                    <animate
+                      attributeName='opacity'
+                      from='0.5'
+                      to='0'
+                      dur='1.5s'
+                      begin='0s'
+                      repeatCount='indefinite'
+                    />
+                  </>
+                ) : null}
               </circle>
             </g>
           </g>
         ))}
 
-        {labelPositions.map((node, index) => (
-          <motion.g
-            key={`label-${node.label}-${index}`}
-            initial={{ opacity: 0, scale: 0.85, y: 6 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{
-              delay: 0.6 + index * 0.2,
-              duration: 0.6,
-              ease: 'easeOut',
-            }}
-          >
-            <circle
-              cx={node.x}
-              cy={node.y}
-              r='4'
-              fill={lineColor}
-              fillOpacity='0.35'
-            />
-            <motion.text
-              x={node.x + 8}
-              y={node.y - 6}
-              fill='rgba(255,255,255,0.85)'
-              fontSize='12'
-              fontWeight='600'
-              letterSpacing='0.08em'
+        {labelPositions.map((node, index) =>
+          shouldReduceMotion ? (
+            <g key={`label-${node.label}-${index}`}>
+              <circle
+                cx={node.x}
+                cy={node.y}
+                r='4'
+                fill={lineColor}
+                fillOpacity='0.35'
+              />
+              <text
+                x={node.x + 8}
+                y={node.y - 6}
+                fill='rgba(255,255,255,0.85)'
+                fontSize='12'
+                fontWeight='600'
+                letterSpacing='0.08em'
+              >
+                {node.label}
+              </text>
+            </g>
+          ) : (
+            <motion.g
+              key={`label-${node.label}-${index}`}
+              initial={{ opacity: 0, scale: 0.85, y: 6 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{
+                delay: 0.6 + index * 0.2,
+                duration: 0.6,
+                ease: 'easeOut',
+              }}
             >
-              {node.label}
-            </motion.text>
-          </motion.g>
-        ))}
+              <circle
+                cx={node.x}
+                cy={node.y}
+                r='4'
+                fill={lineColor}
+                fillOpacity='0.35'
+              />
+              <motion.text
+                x={node.x + 8}
+                y={node.y - 6}
+                fill='rgba(255,255,255,0.85)'
+                fontSize='12'
+                fontWeight='600'
+                letterSpacing='0.08em'
+              >
+                {node.label}
+              </motion.text>
+            </motion.g>
+          )
+        )}
       </svg>
     </div>
   );

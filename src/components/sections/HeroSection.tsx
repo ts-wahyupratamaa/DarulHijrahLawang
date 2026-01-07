@@ -1,24 +1,50 @@
 'use client';
 import Image from 'next/image';
-import React from 'react';
+import dynamic from 'next/dynamic';
+import React, { useEffect, useState } from 'react';
 import { heroContent, siteBrand, heroConnections } from '@/data/siteContent';
 import AnimatedReveal from '@/components/ui/AnimatedReveal';
-import WorldMap from '@/components/ui/world-map';
 import { handleDownload } from '@/data/bookletUnduh';
+
+const WorldMap = dynamic(() => import('@/components/ui/world-map'), {
+  ssr: false,
+});
+
 const HeroSection: React.FC = () => {
+  const [showMap, setShowMap] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+
+    const mediaQuery = window.matchMedia('(min-width: 768px)');
+    const handleChange = () => setShowMap(mediaQuery.matches);
+
+    handleChange();
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+
+    mediaQuery.addListener(handleChange);
+    return () => mediaQuery.removeListener(handleChange);
+  }, []);
+
   return (
     <section className='relative overflow-hidden bg-linear-to-br from-sky-500 via-sky-400 to-sky-600'>
       <div className='absolute inset-0'>
         <div className='h-full w-full bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.45),transparent_60%)]' />
       </div>
       <div className='pointer-events-none absolute inset-0 hidden opacity-40 mix-blend-screen md:block'>
-        <div className='absolute -top-[28%] left-1/2 h-[130%] w-[140%] -translate-x-1/2'>
-          <WorldMap
-            dots={heroConnections}
-            lineColor='rgba(226, 243, 255, 0.85)'
-            dotColor='rgba(255,255,255,0.7)'
-          />
-        </div>
+        {showMap ? (
+          <div className='absolute -top-[28%] left-1/2 h-[130%] w-[140%] -translate-x-1/2'>
+            <WorldMap
+              dots={heroConnections}
+              lineColor='rgba(226, 243, 255, 0.85)'
+              dotColor='rgba(255,255,255,0.7)'
+            />
+          </div>
+        ) : null}
       </div>
       <div className='container relative mx-auto flex min-h-[68vh] flex-col justify-center gap-12 px-4 pt-32 pb-20 sm:px-6 md:min-h-[80vh] md:flex-row md:items-center md:pt-44 md:pb-32 lg:py-32'>
         <AnimatedReveal className='flex flex-1 flex-col gap-6 text-center text-white md:text-left'>

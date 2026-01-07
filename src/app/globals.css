@@ -160,6 +160,39 @@ body {
   transform: translateY(0) scale(1);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-slow-spin,
+  .animate-pulse-slow {
+    animation: none;
+  }
+
+  .reveal-element {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@media (max-width: 767px) and (hover: none) and (pointer: coarse) {
+  .lazy-section {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 900px;
+  }
+
+  .animate-float,
+  .animate-slow-spin,
+  .animate-pulse-slow {
+    animation: none;
+  }
+
+  .reveal-element {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
